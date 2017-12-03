@@ -393,6 +393,7 @@ export default {
         if (this.files.findIndex(existingFile => existingFile.file.name === file.name) === -1) {
           const fileObj = this.uploadFactory(file)
           this.files.push(fileObj)
+          this.$bus.$emit('fileAdded', file)
         }
       })
       // start upload if queue is not being used i.e not multiple
@@ -597,6 +598,8 @@ export default {
     this.configureAxios()
     this.$bus.$on('fileUploaded', file => this.removeFile(file))
     this.$bus.$on('startUploadingProcess', this.upload)
+
+    this.$bus.$on('removeFile', file => this.removeFile(file))
   }
 }
 </script>
