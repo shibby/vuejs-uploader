@@ -171,6 +171,8 @@ export default {
       axios: null,
       files: [],
       errorMessage: null,
+      requestCancelToken: null,
+      requestSource: null,
       isDraggedOver: null
     }
   },
@@ -240,6 +242,8 @@ export default {
      * @param  {FileUpload} fileObj
      */
     uploadFile (fileObj) {
+      this.requestCancelToken = axios.CancelToken
+      this.requestSource = this.requestCancelToken.source()
       if (this.multipart && fileObj.file.size > this.multipartChunkSize) {
         this.multipartUploadFile(fileObj)
         return true
@@ -254,6 +258,7 @@ export default {
           fileObj.setProgress(progressEvent)
         }
       }
+
       this.axios.post(this.endPoint, data, config)
         .then((response) => {
           this.$bus.$emit('fileUploaded', {
@@ -484,6 +489,13 @@ export default {
       this.resetError()
       const index = this.files.indexOf(file)
       this.files.splice(index, 1)
+      /* if (this.requestSource) {
+        console.log(this.requestSource)
+        this.clear()
+        this.requestSource.cancel()
+        this.$bus.$emit('fileUploadAborted', {})
+        this.requestSource = null
+      } */
     },
 
     /**
